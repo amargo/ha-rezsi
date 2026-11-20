@@ -98,3 +98,74 @@ def test_monthly_breakdown():
 def test_empty_usage():
     with pytest.raises(ValueError):
         compute([], only26, CalcOptions())
+
+
+def _spread():
+    """10 days of 2026 (imp 10, exp 2 per day) + 10 days of 2027 (imp 30, exp 5 per day)."""
+    return [
+        DayUsage(date(2026, 12, 22) + timedelta(n),
+                 imp=10 if n < 10 else 30, exp=2 if n < 10 else 5)
+        for n in range(20)
+    ]
+
+
+def _pick(d):
+    return T27 if d >= T27.valid_from else T26
+
+
+def test_szaldo_surplus():
+    r = compute([DayUsage(START, 1000, 1500)], only26, CalcOptions(szaldo=True))
+    assert r.billed_kwh == 0
+    assert r.credit == pytest.approx(7500)
+    assert r.elec_reg == pytest.approx(-7500)
+    assert r.elec_mkt == pytest.approx(-7500)
+
+
+def test_tariff_change_szaldo_split_by_import_share():
+    # imp 100 + 300 = 400, exp 20 + 50 = 70 -> billed 330, no surplus.
+    # q26 = 330 * 100/400 = 82.5, q27 = 330 * 300/400 = 247.5; band per block = 2523 * 10 / 365.
+    r = compute(_spread(), _pick, CalcOptions(szaldo=True))
+    band = 2523 * 10 / 365
+    assert r.billed_kwh == pytest.approx(330)
+    assert r.credit == 0
+    assert r.elec_mkt == pytest.approx(82.5 * 130 + 247.5 * 200)
+    assert r.elec_reg == pytest.approx(tier(82.5, band, 36.06, 70.10) + tier(247.5, band, 36.06, 70.10))
+
+
+def test_tariff_change_gross_split_credit_by_export_share():
+    # billed = imp 400: q26 = 100, q27 = 300. Credit: 2026 exp 20 * 15, 2027 exp 50 * 15 = 300 + 750.
+    r = compute(_spread(), _pick, CalcOptions(szaldo=False))
+    band = 2523 * 10 / 365
+    assert r.credit == pytest.approx(1050)
+    assert r.elec_mkt == pytest.approx(100 * 130 + 300 * 200 - 1050)
+    assert r.elec_reg == pytest.approx(tier(100, band, 36.06, 70.10) + tier(300, band, 36.06, 70.10) - 1050)
+
+
+def test_gas_across_tariff_change():
+    t27 = replace(T27, gas=Gas(110, 800, 1729, 600))
+    pick = lambda d: t27 if d >= t27.valid_from else T26
+    usage = [DayUsage(date(2026, 12, 22) + timedelta(n), gas=1 if n < 10 else 3) for n in range(20)]
+    r = compute(usage, pick, CalcOptions())
+    # 10 m3 in 2026 and 30 m3 in 2027, both far below their band (1729 * 10 / 365)
+    assert r.gas_m3 == pytest.approx(40)
+    assert r.gas_band_m3 == pytest.approx(2 * 1729 * 10 / 365)
+    assert r.gas_reg == pytest.approx(10 * 102 + 30 * 110)
+    assert r.gas_mkt == pytest.approx(10 * 500 + 30 * 600)
+
+
+def test_rhd_across_year_boundary_only_new_block():
+    usage = [DayUsage(date(2026, 12, 22) + timedelta(n), imp=10) for n in range(20)]
+    r = compute(usage, _pick, CalcOptions(rhd=True))
+    # 2026 block has no RHD extra; 2027 block: 10 days, q = 100 kWh
+    assert r.rhd == pytest.approx((12930 * 10 / 365 - 2.08 * 100) * 1.27)
+
+
+def test_negative_delta_ignored():
+    good = [DayUsage(START, 10, 2, 3)]
+    bad = good + [DayUsage(date(2026, 1, 2), -5, -1, -2)]
+    a = compute(good, only26, CalcOptions())
+    b = compute(bad, only26, CalcOptions())
+    assert b.imp_kwh == 10 and b.exp_kwh == 2 and b.gas_m3 == 3
+    assert b.monthly["2026-01"] == {"vetel_kwh": 10.0, "betaplalas_kwh": 2.0, "gaz_m3": 3.0}
+    assert b.days == 2
+    assert b.gas_reg == pytest.approx(a.gas_reg)

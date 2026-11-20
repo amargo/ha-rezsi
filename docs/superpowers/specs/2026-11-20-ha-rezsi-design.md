@@ -96,11 +96,11 @@ Közös attribútumok: `idoszak_kezdete`, `eltelt_napok`, `vetel_kwh`, `betaplal
 5. Piaci ár = `q × piaci`.
 6. RHD-felár (ha be van kapcsolva) = (`rhd_base_extra` × napok/365 + `rhd_kwh_extra` × q) × (1 + áfa); csak a piaci összeghez adódik (a rezsiárat a Rezsitv. 2. § plafonozza).
 7. Tarifaváltás az időszakon belül: a napokat az aznap érvényes blokk szerint csoportosítja; a
-   sávhatárt a csoportok napszáma szerint osztja szét.
+   sávhatárt a csoportok napszáma szerint osztja szét. Szaldó nettósítás az egész időszakra; az elszámolt kWh a blokkok között a vétel arányában, a jóváírás a betáplálás arányában oszlik meg.
 8. Gáz ugyanígy, saját sávhatárral és szorzóval.
 
 Nyitott (forrás ellenőrzése): a sávhatár időarányosítás pontos jogszabályi szabálya miniszteri
-rendeletben van (Vet. 3. § 29a. pont), ez nincs még a hu-law korpuszban. Addig napi arányosítás,
+rendeletben van (Vet. 3. § 29a. pont), ez nincs még a hu-law korpuszban. Addig napi arányosítás (fix 365 nap, szökőévben is),
 a specben és README-ben jelölve.
 
 ## Hibakezelés

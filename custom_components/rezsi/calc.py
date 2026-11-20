@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import date
 from typing import Callable
 
@@ -32,7 +32,7 @@ class Result:
     exp_kwh: float
     billed_kwh: float
     band_kwh: float
-    band_used_pct: float
+    band_used_pct: float  # billed kWh of the whole period / summed band, in percent
     credit: float
     elec_reg: float
     elec_mkt: float
@@ -56,9 +56,11 @@ def compute(usage: list[DayUsage], tariff_for: Callable[[date], Tariff], opts: C
     Szaldó nets import and export over the whole period. Days are grouped by the
     tariff block valid on them; each group gets the band in proportion to its day
     count and the billed quantity in proportion to its import (or days if no import).
+    Negative daily deltas (meter reset, statistics glitch) are clamped to 0.
     """
     if not usage:
         raise ValueError("no usage data")
+    usage = [replace(u, imp=max(0.0, u.imp), exp=max(0.0, u.exp), gas=max(0.0, u.gas)) for u in usage]
     groups: dict[date, list[DayUsage]] = defaultdict(list)
     blocks: dict[date, Tariff] = {}
     for u in usage:
