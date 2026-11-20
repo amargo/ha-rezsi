@@ -55,7 +55,7 @@
     {
       "id": 6,
       "subject": "Task 6: Coordinator, entry setup and entities",
-      "status": "pending",
+      "status": "completed",
       "description": "See plan section 'Task 6: Coordinator, entry setup and entities'.\n\n```json:metadata\n{\"files\": [\"custom_components/rezsi/coordinator.py\", \"custom_components/rezsi/__init__.py\", \"custom_components/rezsi/sensor.py\", \"custom_components/rezsi/button.py\", \"custom_components/rezsi/date.py\", \"tests/test_init.py\"], \"verifyCommand\": \".venv/Scripts/python -m pytest tests/test_init.py -v\", \"acceptanceCriteria\": []}\n```",
       "blockedBy": [
         2,
@@ -74,5 +74,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-20T10:40:03"
+  "lastUpdated": "2026-11-20T10:50:03"
 }
