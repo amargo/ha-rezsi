@@ -4,13 +4,13 @@
     {
       "id": 0,
       "subject": "Task 0: Repository scaffold and test environment",
-      "status": "pending",
+      "status": "completed",
       "description": "See plan section 'Task 0: Repository scaffold and test environment'.\n\n```json:metadata\n{\"files\": [\"hacs.json\", \"custom_components/rezsi/manifest.json\", \"custom_components/rezsi/const.py\", \"tests/conftest.py\"], \"verifyCommand\": \".venv/Scripts/python -m pytest -q\", \"acceptanceCriteria\": []}\n```"
     },
     {
       "id": 1,
       "subject": "Task 1: Tariff file and loader",
-      "status": "pending",
+      "status": "completed",
       "description": "See plan section 'Task 1: Tariff file and loader'.\n\n```json:metadata\n{\"files\": [\"custom_components/rezsi/tariffs.yaml\", \"custom_components/rezsi/tariffs.py\", \"tests/test_tariffs.py\"], \"verifyCommand\": \".venv/Scripts/python -m pytest tests/test_tariffs.py -v\", \"acceptanceCriteria\": []}\n```",
       "blockedBy": [
         0
@@ -74,5 +74,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-20T10:17:06"
+  "lastUpdated": "2026-11-20T10:28:55"
 }
