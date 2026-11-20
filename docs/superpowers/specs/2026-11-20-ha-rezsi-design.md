@@ -44,12 +44,12 @@ Repó: `amargo/ha-rezsi`, domain: `rezsi`, MIT licenc, `hacs.json`.
 - valid_from: 2026-01-01
   source: "<rendelet / MEKH határozat száma>"
   electricity: {reduced: 36.06, above: 70.10, band_kwh: 2523, market: 130, feed_in: 15,
-                rhd_base: 1446, rhd_kwh: 23.40}
+                rhd_base_extra: 0, rhd_kwh_extra: 0}
   gas: {reduced: 102, above: 747, band_m3: 1729, market: 500}
   vat: 27
 - valid_from: 2027-01-01
   source: "MEKH H 3193/2026"
-  electricity: {rhd_base: 14376, rhd_kwh: 21.32}
+  electricity: {rhd_base_extra: 12930, rhd_kwh_extra: -2.08}   # 14376−1446 Ft/év, 21.32−23.40 Ft/kWh, nettó
 ```
 
 - Egy blokk csak a változó kulcsokat tartalmazza; a betöltő az előző blokkból örököl.
@@ -94,7 +94,7 @@ Közös attribútumok: `idoszak_kezdete`, `eltelt_napok`, `vetel_kwh`, `betaplal
 3. Arányosított sávhatár = éves sávhatár × szorzó × eltelt napok / 365.
 4. Rezsiár = `min(q, sáv) × kedvezményes + max(0, q − sáv) × átlag feletti`.
 5. Piaci ár = `q × piaci`.
-6. RHD (ha be van kapcsolva) = (alapdíj különbség × napok/365 + kWh-díj különbség × q) × (1 + áfa).
+6. RHD-felár (ha be van kapcsolva) = (`rhd_base_extra` × napok/365 + `rhd_kwh_extra` × q) × (1 + áfa); csak a piaci összeghez adódik (a rezsiárat a Rezsitv. 2. § plafonozza).
 7. Tarifaváltás az időszakon belül: a napokat az aznap érvényes blokk szerint csoportosítja; a
    sávhatárt a csoportok napszáma szerint osztja szét.
 8. Gáz ugyanígy, saját sávhatárral és szorzóval.
@@ -105,8 +105,8 @@ a specben és README-ben jelölve.
 
 ## Hibakezelés
 
-- Hiányzó/`unavailable` forrásszenzor vagy statisztika: az érintett szenzorok `unavailable`, a
-  többiek számolnak.
+- Nincs vételi statisztika: a setup `ConfigEntryNotReady`, a HA újrapróbálja.
+- Hiányzó gázstatisztika: a gáz- és összesen-szenzorok gáz nélkül / `unavailable`, a villany számol.
 - Rövidebb statisztika, mint az időszak: `adat_hianyos: true`, `elso_adat_napja`.
 - Hibás `tariffs.yaml` vagy felülírás: setup hiba érthető üzenettel (a tesztek ezt kizárják release előtt).
 
