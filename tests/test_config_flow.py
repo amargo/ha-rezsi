@@ -14,7 +14,7 @@ USER = {"name": "Velencei ház", CONF_IMPORT: "sensor.imp", CONF_GAS: "sensor.ga
 
 
 async def test_user_flow(hass):
-    with patch("custom_components.rezsi.async_setup_entry", return_value=True, create=True):
+    with patch("custom_components.rezsi.async_setup_entry", return_value=True):
         r = await hass.config_entries.flow.async_init(DOMAIN, context={"source": config_entries.SOURCE_USER})
         assert r["type"] is FlowResultType.FORM
         r = await hass.config_entries.flow.async_configure(r["flow_id"], USER)
@@ -35,7 +35,7 @@ async def test_duplicate_name(hass):
 async def test_options_flow(hass):
     entry = MockConfigEntry(domain=DOMAIN, unique_id="x", title="X", data={CONF_IMPORT: "sensor.imp", CONF_SZALDO: True})
     entry.add_to_hass(hass)
-    with patch("custom_components.rezsi.async_setup_entry", return_value=True, create=True):
+    with patch("custom_components.rezsi.async_setup_entry", return_value=True):
         r = await hass.config_entries.options.async_init(entry.entry_id)
         assert r["type"] is FlowResultType.FORM
         r = await hass.config_entries.options.async_configure(
@@ -64,7 +64,7 @@ async def test_invalid_name(hass):
 
 
 async def test_period_start_default(hass):
-    with patch("custom_components.rezsi.async_setup_entry", return_value=True, create=True):
+    with patch("custom_components.rezsi.async_setup_entry", return_value=True):
         r = await hass.config_entries.flow.async_init(DOMAIN, context={"source": config_entries.SOURCE_USER})
         r = await hass.config_entries.flow.async_configure(r["flow_id"], USER)
     expected = (dt_util.now().date() - timedelta(days=365)).isoformat()
@@ -74,7 +74,7 @@ async def test_period_start_default(hass):
 async def test_options_no_overrides(hass):
     entry = MockConfigEntry(domain=DOMAIN, unique_id="x", title="X", data={CONF_IMPORT: "sensor.imp"})
     entry.add_to_hass(hass)
-    with patch("custom_components.rezsi.async_setup_entry", return_value=True, create=True):
+    with patch("custom_components.rezsi.async_setup_entry", return_value=True):
         r = await hass.config_entries.options.async_init(entry.entry_id)
         r = await hass.config_entries.options.async_configure(
             r["flow_id"], {CONF_SZALDO: True, CONF_ELEC_MULT: 1, CONF_GAS_MULT: 1, CONF_RHD: False}

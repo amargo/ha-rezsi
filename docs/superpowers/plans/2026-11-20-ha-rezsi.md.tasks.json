@@ -46,7 +46,7 @@
     {
       "id": 5,
       "subject": "Task 5: Config flow and options flow",
-      "status": "pending",
+      "status": "completed",
       "description": "See plan section 'Task 5: Config flow and options flow'.\n\n```json:metadata\n{\"files\": [\"custom_components/rezsi/config_flow.py\", \"custom_components/rezsi/strings.json\", \"tests/test_config_flow.py\"], \"verifyCommand\": \".venv/Scripts/python -m pytest tests/test_config_flow.py -v\", \"acceptanceCriteria\": []}\n```",
       "blockedBy": [
         0
@@ -74,5 +74,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-20T10:36:42"
+  "lastUpdated": "2026-11-20T10:40:03"
 }
