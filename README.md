@@ -27,9 +27,9 @@ Az entitásnevek fixen magyarok, így az azonosítók a HA nyelvétől függetle
 | `button.<hely>_leolvasas_most` | lezárja az időszakot (az `elozo_idoszak` attribútumba menti), új időszak mától |
 | `date.<hely>_idoszak_kezdete` | az időszak kezdete, kézzel állítható |
 
-Hasznos attribútumok: `eltelt_napok`, `vetel_kwh`, `betaplalas_kwh`, `elszamolt_kwh`,
-`savhatar_aranyos`, `savhatar_felhasznalt_pct`, `tarifa_valid_from`, `havi_bontas`,
-`adat_hianyos`, `elso_adat_napja`.
+Hasznos attribútumok: `idoszak_kezdete`, `eltelt_napok`, `vetel_kwh`, `betaplalas_kwh`,
+`elszamolt_kwh`, `gaz_m3`, `savhatar_aranyos`, `savhatar_felhasznalt_pct`, `gaz_savhatar_aranyos`,
+`tarifa_valid_from`, `tarifa_forras`, `havi_bontas`, `elozo_idoszak`, `adat_hianyos`, `elso_adat_napja`.
 
 ## Időszak
 - Alapértelmezett kezdet: ma − 364 nap (365 számolt nap a mai napot beleértve). Módosítható a

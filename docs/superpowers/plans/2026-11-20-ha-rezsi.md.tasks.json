@@ -67,12 +67,12 @@
     {
       "id": 7,
       "subject": "Task 7: CI, README and release prep",
-      "status": "pending",
+      "status": "completed",
       "description": "See plan section 'Task 7: CI, README and release prep'.\n\n```json:metadata\n{\"files\": [\".github/workflows/validate.yml\", \".github/workflows/tests.yml\", \"README.md\"], \"verifyCommand\": \".venv/Scripts/python -m pytest -q\", \"acceptanceCriteria\": []}\n```",
       "blockedBy": [
         6
       ]
     }
   ],
-  "lastUpdated": "2026-11-20T10:50:03"
+  "lastUpdated": "2026-11-20T10:54:42"
 }

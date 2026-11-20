@@ -29,7 +29,7 @@ class RezsiData:
 
     result: Result
     start: date
-    first_day: date
+    first_day: date | None  # None: no import rows in the period yet
     gas_ok: bool
 
 
@@ -41,6 +41,7 @@ class RezsiCoordinator(DataUpdateCoordinator[RezsiData]):
         super().__init__(hass, _LOGGER, config_entry=entry, name=entry.title, update_interval=timedelta(hours=1))
         self.store = store
         self.tariffs = tariffs
+        self._export_warned = False
 
     @property
     def cfg(self) -> dict[str, Any]:
@@ -57,9 +58,13 @@ class RezsiCoordinator(DataUpdateCoordinator[RezsiData]):
         ids = {"imp": cfg.get(CONF_IMPORT), "exp": cfg.get(CONF_EXPORT), "gas": cfg.get(CONF_GAS)}
         changes = await async_daily_changes(self.hass, ids, start, today)
         imp = changes.get("imp") or {}
-        if not imp:
+        if not imp and self.data is None:
             raise UpdateFailed(f"no statistics for {cfg.get(CONF_IMPORT)}")
+        # Later (e.g. a period started today, before its first row) empty means zero usage.
         exp = changes.get("exp") or {}
+        if ids["exp"] and not exp and not self._export_warned:
+            _LOGGER.warning("%s: no statistics for export %s, counted as 0", self.name, ids["exp"])
+            self._export_warned = True
         gas = changes.get("gas") or {}
         usage = [
             DayUsage(d, imp.get(d, 0.0), exp.get(d, 0.0), gas.get(d, 0.0))
@@ -75,7 +80,7 @@ class RezsiCoordinator(DataUpdateCoordinator[RezsiData]):
             result = compute(usage, partial(tariff_for, self.tariffs), opts)
         except ValueError as err:
             raise UpdateFailed(str(err)) from err
-        return RezsiData(result=result, start=start, first_day=min(imp), gas_ok=bool(gas))
+        return RezsiData(result=result, start=start, first_day=min(imp) if imp else None, gas_ok=bool(gas))
 
     @property
     def gas_ok(self) -> bool:
@@ -121,6 +126,6 @@ class RezsiCoordinator(DataUpdateCoordinator[RezsiData]):
             "tarifa_forras": r.tariff.source,
             "havi_bontas": r.monthly,
             "elozo_idoszak": self.store.previous,
-            "adat_hianyos": d.first_day > d.start,
-            "elso_adat_napja": d.first_day.isoformat(),
+            "adat_hianyos": d.first_day is None or d.first_day > d.start,
+            "elso_adat_napja": d.first_day.isoformat() if d.first_day else None,
         }

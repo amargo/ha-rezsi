@@ -57,6 +57,18 @@ async def test_daily_changes(recorder_mock, hass):
     }
 
 
+async def test_wh_statistic_in_kwh(recorder_mock, hass):
+    today = dt_util.now().date()
+    d0 = today - timedelta(days=1)
+    start = dt_util.start_of_local_day(d0)
+    stats = [{"start": start + timedelta(hours=h), "sum": 1000.0 * (h + 1), "state": 0.0} for h in range(24)]
+    async_import_statistics(hass, _metadata("sensor.imp_wh", "Wh"), stats)
+    await async_wait_recording_done(hass)
+
+    out = await async_daily_changes(hass, {"imp": "sensor.imp_wh"}, d0, today)
+    assert out == {"imp": {d0: pytest.approx(24.0)}}
+
+
 async def test_unknown_statistic_id(recorder_mock, hass):
     today = dt_util.now().date()
     out = await async_daily_changes(hass, {"imp": "sensor.nope"}, today - timedelta(days=3), today)

@@ -5,6 +5,7 @@ from datetime import date, timedelta
 
 from homeassistant.components.recorder import get_instance
 from homeassistant.components.recorder.statistics import statistics_during_period
+from homeassistant.const import UnitOfEnergy, UnitOfVolume
 from homeassistant.core import HomeAssistant
 from homeassistant.util import dt as dt_util
 
@@ -29,7 +30,7 @@ async def async_daily_changes(
         end_dt,
         set(wanted.values()),
         "day",
-        None,
+        {"energy": UnitOfEnergy.KILO_WATT_HOUR, "volume": UnitOfVolume.CUBIC_METERS},
         {"change"},
     )
     out: dict[str, dict[date, float]] = {}

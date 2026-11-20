@@ -8,7 +8,7 @@ from homeassistant.util import dt as dt_util
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.rezsi.const import (
-    CONF_GAS, CONF_IMPORT, CONF_OVERRIDES, CONF_PERIOD_START, CONF_SZALDO, DOMAIN,
+    CONF_EXPORT, CONF_GAS, CONF_IMPORT, CONF_OVERRIDES, CONF_PERIOD_START, CONF_SZALDO, DOMAIN,
 )
 
 FETCH = "custom_components.rezsi.coordinator.async_daily_changes"
@@ -145,6 +145,40 @@ async def test_options_change_reloads(recorder_mock, hass):
         await hass.async_block_till_done()
     assert e.state is ConfigEntryState.LOADED
     assert float(hass.states.get("sensor.velencei_haz_villany_piaci_aron").state) == pytest.approx(3580 * 200, abs=1)
+
+
+async def test_empty_fresh_period_stays_available(recorder_mock, hass):
+    today = dt_util.now().date()
+    inner = fake()
+
+    async def no_rows_today(hass, ids, start, end):
+        if start == today:  # just after "Leolvasás most": no statistics row for today yet
+            return {"imp": {}, "gas": {}}
+        return await inner(hass, ids, start, end)
+
+    e = entry(hass)
+    with patch(FETCH, side_effect=no_rows_today):
+        await hass.config_entries.async_setup(e.entry_id)
+        await hass.async_block_till_done()
+        await hass.services.async_call("button", "press", {"entity_id": "button.velencei_haz_leolvasas_most"}, blocking=True)
+        await hass.async_block_till_done()
+    assert e.state is ConfigEntryState.LOADED
+    mkt = hass.states.get("sensor.velencei_haz_villany_piaci_aron")
+    assert float(mkt.state) == 0
+    assert float(hass.states.get("sensor.velencei_haz_villany_rezsiaron").state) == 0
+    assert mkt.attributes["idoszak_kezdete"] == today.isoformat()
+    assert mkt.attributes["elozo_idoszak"]["villany_piaci_aron"] == pytest.approx(3580 * 130, abs=1)
+
+
+async def test_missing_export_warns_once(recorder_mock, hass, caplog):
+    e = entry(hass)
+    hass.config_entries.async_update_entry(e, data={**e.data, CONF_EXPORT: "sensor.exp"})
+    with patch(FETCH, side_effect=fake()):
+        await hass.config_entries.async_setup(e.entry_id)
+        await hass.async_block_till_done()
+        await e.runtime_data.async_refresh()
+    assert e.state is ConfigEntryState.LOADED
+    assert caplog.text.count("no statistics for export sensor.exp") == 1
 
 
 async def test_no_import_stats_retries(recorder_mock, hass):

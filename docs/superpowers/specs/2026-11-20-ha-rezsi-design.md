@@ -31,7 +31,7 @@ Repó: `amargo/ha-rezsi`, domain: `rezsi`, MIT licenc, `hacs.json`.
 | `tariffs.yaml` | dátumozott tarifablokkok (`valid_from`), minden értékhez forrás | nem |
 | `tariffs.py` | betöltés, adott napon érvényes blokk, felülírások összefésülése | nem |
 | `calc.py` | tiszta számítás (sávos/piaci ár, szaldó, betáplálás, RHD, arányosítás, szorzó) | nem |
-| `coordinator.py` | óránként LTS-lekérdezés (`statistics_during_period`, `sum`, napi), `calc` hívás | igen |
+| `coordinator.py` | óránként LTS-lekérdezés (`statistics_during_period`, `change`, napi), `calc` hívás | igen |
 | `config_flow.py` | setup + options flow | igen |
 | `sensor.py`, `button.py`, `date.py` | entitások | igen |
 | `store.py` | időszak kezdete és előző lezárt időszak (`homeassistant.helpers.storage.Store`) | igen |
@@ -61,9 +61,9 @@ Repó: `amargo/ha-rezsi`, domain: `rezsi`, MIT licenc, `hacs.json`.
 
 Config flow: név (kötelező), villany vétel szenzor (kötelező, kWh, `total_increasing`),
 betáplálás szenzor (opcionális), gáz szenzor (opcionális, m³), szaldó (igen/nem, alap: igen),
-időszak kezdete (alap: ma − 365 nap).
+időszak kezdete (alap: ma − 364 nap (a mai nappal 365 nap)).
 
-Options flow: villany sávhatár-szorzó (alap 1), gáz sávhatár-szorzó (alap 1), RHD-különbség
+Options flow: szaldó (igen/nem), villany sávhatár-szorzó (alap 1), gáz sávhatár-szorzó (alap 1), RHD-különbség
 kapcsoló (alap: ki), tarifa-felülírások (piaci ár, átvételi ár, kedvezményes/átlag feletti ár,
 sávhatár).
 
@@ -88,7 +88,7 @@ Közös attribútumok: `idoszak_kezdete`, `eltelt_napok`, `vetel_kwh`, `betaplal
 
 ## Számítás
 
-1. Napi összegek LTS-ből (`sum` különbség napról napra), az időszak kezdetétől máig.
+1. Napi fogyasztás LTS-ből (napi `change`, kWh-ra / m³-re normálva), az időszak kezdetétől máig.
 2. Elszámolt villany: szaldónál `max(0, vétel − betáplálás)` az időszakra; jóváírás a többletre
    átvételi áron. Bruttónál elszámolt = vétel, jóváírás = betáplálás × átvételi ár.
 3. Arányosított sávhatár = éves sávhatár × szorzó × eltelt napok / 365.
