@@ -28,7 +28,7 @@
     {
       "id": 3,
       "subject": "Task 3: Recorder daily statistics fetch",
-      "status": "pending",
+      "status": "completed",
       "description": "See plan section 'Task 3: Recorder daily statistics fetch'.\n\n```json:metadata\n{\"files\": [\"custom_components/rezsi/statistics.py\", \"tests/test_statistics.py\"], \"verifyCommand\": \".venv/Scripts/python -m pytest tests/test_statistics.py -v\", \"acceptanceCriteria\": []}\n```",
       "blockedBy": [
         0
@@ -74,5 +74,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-20T10:32:42"
+  "lastUpdated": "2026-11-20T10:35:41"
 }
