@@ -37,7 +37,7 @@
     {
       "id": 4,
       "subject": "Task 4: Period store",
-      "status": "pending",
+      "status": "completed",
       "description": "See plan section 'Task 4: Period store'.\n\n```json:metadata\n{\"files\": [\"custom_components/rezsi/store.py\", \"tests/test_store.py\"], \"verifyCommand\": \".venv/Scripts/python -m pytest tests/test_store.py -v\", \"acceptanceCriteria\": []}\n```",
       "blockedBy": [
         0
@@ -74,5 +74,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-20T10:35:41"
+  "lastUpdated": "2026-11-20T10:36:42"
 }

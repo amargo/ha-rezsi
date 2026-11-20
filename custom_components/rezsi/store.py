@@ -6,6 +6,7 @@ from typing import Any
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.storage import Store
+from homeassistant.util import dt as dt_util
 
 from .const import DOMAIN
 
@@ -15,7 +16,7 @@ class PeriodStore:
 
     def __init__(self, hass: HomeAssistant, entry_id: str) -> None:
         self._store: Store[dict[str, Any]] = Store(hass, 1, f"{DOMAIN}.{entry_id}")
-        self.period_start: date = date.today()
+        self.period_start: date = dt_util.now().date()
         self.previous: dict[str, Any] | None = None
 
     async def async_load(self, default_start: date) -> None:
