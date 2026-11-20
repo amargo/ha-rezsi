@@ -1,6 +1,7 @@
 """Config and options flow for Rezsi kalkulátor."""
 from __future__ import annotations
 
+from datetime import timedelta
 from typing import Any
 
 import voluptuous as vol
@@ -17,7 +18,7 @@ from homeassistant.helpers.selector import (
     NumberSelectorConfig,
     NumberSelectorMode,
 )
-from homeassistant.util import slugify
+from homeassistant.util import dt as dt_util, slugify
 
 from .const import (
     CONF_ELEC_MULT, CONF_EXPORT, CONF_GAS, CONF_GAS_MULT, CONF_IMPORT, CONF_OVERRIDES,
@@ -36,8 +37,14 @@ class RezsiConfigFlow(ConfigFlow, domain=DOMAIN):
     VERSION = 1
 
     async def async_step_user(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        errors: dict[str, str] = {}
         if user_input is not None:
-            await self.async_set_unique_id(slugify(user_input[CONF_NAME]))
+            slug = slugify(user_input[CONF_NAME])
+            # HA's slugify maps symbol-only names to "unknown", so check the name itself.
+            if not slug or not any(c.isalnum() for c in user_input[CONF_NAME]):
+                errors["base"] = "invalid_name"
+        if user_input is not None and not errors:
+            await self.async_set_unique_id(slug)
             self._abort_if_unique_id_configured()
             data = {k: v for k, v in user_input.items() if k != CONF_NAME}
             return self.async_create_entry(title=user_input[CONF_NAME], data=data)
@@ -48,10 +55,13 @@ class RezsiConfigFlow(ConfigFlow, domain=DOMAIN):
                 vol.Optional(CONF_EXPORT): ENERGY,
                 vol.Optional(CONF_GAS): GAS,
                 vol.Required(CONF_SZALDO, default=True): BooleanSelector(),
-                vol.Optional(CONF_PERIOD_START): DateSelector(),
+                vol.Optional(
+                    CONF_PERIOD_START,
+                    default=(dt_util.now().date() - timedelta(days=365)).isoformat(),
+                ): DateSelector(),
             }
         )
-        return self.async_show_form(step_id="user", data_schema=schema)
+        return self.async_show_form(step_id="user", data_schema=schema, errors=errors)
 
     @staticmethod
     @callback

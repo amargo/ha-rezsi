@@ -10,10 +10,11 @@
           "export_entity": "Hálózati betáplálás (kWh, opcionális)",
           "gas_entity": "Gázfogyasztás (m³, opcionális)",
           "szaldo": "Szaldó elszámolás",
-          "period_start": "Elszámolási időszak kezdete (alap: egy éve)"
+          "period_start": "Elszámolási időszak kezdete (alapértelmezés: egy évvel ezelőtt)"
         }
       }
     },
+    "error": { "invalid_name": "A névben legyen betű vagy szám" },
     "abort": { "already_configured": "Ilyen nevű mérőhely már van." }
   },
   "options": {
@@ -27,12 +28,12 @@
           "gas_band_mult": "Gáz sávhatár-szorzó (2 = dupla kedvezmény)",
           "rhd": "2027-es RHD-felár hozzáadása a piaci költséghez",
           "electricity.reduced": "Villany kedvezményes ár (Ft/kWh)",
-          "electricity.above": "Villany átlag feletti ár (Ft/kWh)",
+          "electricity.above": "Villany sávhatár feletti ár (Ft/kWh)",
           "electricity.band_kwh": "Villany éves sávhatár (kWh)",
           "electricity.market": "Villany piaci ár (Ft/kWh)",
           "electricity.feed_in": "Betáplálás átvételi ára (Ft/kWh)",
           "gas.reduced": "Gáz kedvezményes ár (Ft/m³)",
-          "gas.above": "Gáz átlag feletti ár (Ft/m³)",
+          "gas.above": "Gáz sávhatár feletti ár (Ft/m³)",
           "gas.band_m3": "Gáz éves sávhatár (m³)",
           "gas.market": "Gáz piaci ár (Ft/m³)"
         }

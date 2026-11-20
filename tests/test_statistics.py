@@ -13,12 +13,6 @@ from pytest_homeassistant_custom_component.components.recorder.common import (
 from custom_components.rezsi.statistics import async_daily_changes
 
 
-@pytest.fixture(autouse=True)
-def auto_enable_custom_integrations(recorder_mock, enable_custom_integrations):
-    """Override conftest: recorder_mock must be set up before hass."""
-    yield
-
-
 def _metadata(stat_id: str, unit: str) -> dict:
     meta = {
         "has_mean": False,

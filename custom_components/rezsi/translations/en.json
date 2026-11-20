@@ -14,6 +14,7 @@
         }
       }
     },
+    "error": { "invalid_name": "Name must contain letters or digits" },
     "abort": { "already_configured": "A site with this name already exists." }
   },
   "options": {

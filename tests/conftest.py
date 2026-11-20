@@ -3,6 +3,6 @@ import pytest
 
 
 @pytest.fixture(autouse=True)
-def auto_enable_custom_integrations(enable_custom_integrations):
-    """Allow loading custom_components/rezsi in every test."""
+def auto_enable_custom_integrations(recorder_mock, enable_custom_integrations):
+    """Allow loading custom_components/rezsi; recorder must be set up before hass."""
     yield
