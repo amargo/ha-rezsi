@@ -1,7 +1,7 @@
 """Dated tariff blocks: load, look up by day, apply user overrides. No HA imports."""
 from __future__ import annotations
 
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, fields, replace
 from datetime import date
 from pathlib import Path
 from typing import Any
@@ -39,8 +39,27 @@ class Tariff:
     vat: float
 
 
+_GROUPS = {"electricity": Electricity, "gas": Gas}
+_BLOCK_KEYS = {"valid_from", "source", "electricity", "gas", "vat"}
+
+
 def _as_date(v: Any) -> date:
     return v if isinstance(v, date) else date.fromisoformat(str(v))
+
+
+def _floats(values: dict[str, Any], group: str, day: date) -> dict[str, float]:
+    allowed = {f.name for f in fields(_GROUPS[group])}
+    out: dict[str, float] = {}
+    for key, value in values.items():
+        if key not in allowed:
+            raise ValueError(f"tariff block {day.isoformat()}: unknown key {group}.{key}")
+        try:
+            out[key] = float(value)
+        except (TypeError, ValueError) as err:
+            raise ValueError(
+                f"tariff block {day.isoformat()}: {group}.{key} not a number: {value!r}"
+            ) from err
+    return out
 
 
 def load_tariffs(path: Path = TARIFF_FILE) -> list[Tariff]:
@@ -48,22 +67,41 @@ def load_tariffs(path: Path = TARIFF_FILE) -> list[Tariff]:
     raw = yaml.safe_load(path.read_text(encoding="utf-8")) or []
     if not raw:
         raise ValueError(f"{path.name}: no tariff blocks")
+    dated: list[tuple[date, dict[str, Any]]] = []
+    for i, block in enumerate(raw):
+        if not isinstance(block, dict) or "valid_from" not in block:
+            raise ValueError(f"tariff block #{i}: missing valid_from")
+        try:
+            dated.append((_as_date(block["valid_from"]), block))
+        except ValueError as err:
+            raise ValueError(f"tariff block #{i}: bad valid_from: {err}") from err
+    dated.sort(key=lambda d: d[0])
     out: list[Tariff] = []
-    elec: dict[str, Any] = {}
-    gas: dict[str, Any] = {}
+    elec: dict[str, float] = {}
+    gas: dict[str, float] = {}
     vat: Any = None
-    for block in sorted(raw, key=lambda b: _as_date(b["valid_from"])):
-        day = _as_date(block["valid_from"])
-        elec = {**elec, **(block.get("electricity") or {})}
-        gas = {**gas, **(block.get("gas") or {})}
-        vat = block.get("vat", vat)
+    for day, block in dated:
+        if out and out[-1].valid_from == day:
+            raise ValueError(f"duplicate tariff block {day.isoformat()}")
+        for key in block:
+            if key not in _BLOCK_KEYS:
+                raise ValueError(f"tariff block {day.isoformat()}: unknown key {key}")
+        elec = {**elec, **_floats(block.get("electricity") or {}, "electricity", day)}
+        gas = {**gas, **_floats(block.get("gas") or {}, "gas", day)}
+        if "vat" in block:
+            try:
+                vat = float(block["vat"])
+            except (TypeError, ValueError) as err:
+                raise ValueError(
+                    f"tariff block {day.isoformat()}: vat not a number: {block['vat']!r}"
+                ) from err
         try:
             out.append(
                 Tariff(
                     valid_from=day,
                     source=str(block["source"]).strip(),
-                    electricity=Electricity(**{k: float(v) for k, v in elec.items()}),
-                    gas=Gas(**{k: float(v) for k, v in gas.items()}),
+                    electricity=Electricity(**elec),
+                    gas=Gas(**gas),
                     vat=float(vat),
                 )
             )
@@ -84,11 +122,15 @@ def apply_overrides(t: Tariff, overrides: dict[str, Any]) -> Tariff:
     """Overrides look like {"electricity.market": 150}; None/"" mean 'use default'."""
     parts: dict[str, dict[str, float]] = {"electricity": {}, "gas": {}}
     for key, value in overrides.items():
-        if value in (None, ""):
-            continue
         group, _, field = key.partition(".")
-        if group in parts and field:
-            parts[group][field] = float(value)
+        if group not in _GROUPS or field not in {f.name for f in fields(_GROUPS[group])}:
+            raise ValueError(f"unknown override {key}")
+        if value is None or value == "":
+            continue
+        try:
+            parts[group][field] = float(str(value).replace(",", "."))
+        except ValueError as err:
+            raise ValueError(f"override {key}: not a number: {value!r}") from err
     return replace(
         t,
         electricity=replace(t.electricity, **parts["electricity"]),
