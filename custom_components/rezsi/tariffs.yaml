@@ -1,0 +1,26 @@
+# Dated tariff blocks. A block only lists what changes; the rest is inherited
+# from the previous block. Prices are gross Ft (VAT incl.) unless noted.
+# To follow a legal change: add a block with valid_from + source, run tests, release.
+- valid_from: 2026-01-01
+  source: >-
+    Lakossági egyetemes szolgáltatás (rezsicsökkentett) villany- és gázárak;
+    piaci ár: becslés (rezsi.amargo.dev alapértéke)
+  electricity:
+    reduced: 36.06        # Ft/kWh, kedvezményes sávhatárig
+    above: 70.10          # Ft/kWh, átlag feletti
+    band_kwh: 2523        # kWh/év, kedvezményes lakossági sávhatár
+    market: 130           # Ft/kWh, piaci becslés
+    feed_in: 15           # Ft/kWh, betáplálás átvételi ára
+    rhd_base_extra: 0     # Ft/év nettó, RHD alapdíj-felár a 2026-os szinthez képest
+    rhd_kwh_extra: 0      # Ft/kWh nettó, RHD kWh-díj különbség a 2026-os szinthez képest
+  gas:
+    reduced: 102          # Ft/m³, kedvezményes sávhatárig
+    above: 747            # Ft/m³, átlag feletti
+    band_m3: 1729         # m³/év
+    market: 500           # Ft/m³, piaci becslés
+  vat: 27                 # %, csak az RHD-felárra
+- valid_from: 2027-01-01
+  source: MEKH H 3193/2026 (KIF I. / KIF IV. rendszerhasználati díjak 2027)
+  electricity:
+    rhd_base_extra: 12930   # 14376 − 1446
+    rhd_kwh_extra: -2.08    # 21.32 − 23.40
