@@ -67,7 +67,7 @@ async def test_period_start_default(hass):
     with patch("custom_components.rezsi.async_setup_entry", return_value=True):
         r = await hass.config_entries.flow.async_init(DOMAIN, context={"source": config_entries.SOURCE_USER})
         r = await hass.config_entries.flow.async_configure(r["flow_id"], USER)
-    expected = (dt_util.now().date() - timedelta(days=365)).isoformat()
+    expected = (dt_util.now().date() - timedelta(days=364)).isoformat()  # 365 days incl. today
     assert r["data"]["period_start"] == expected
 
 

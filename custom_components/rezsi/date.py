@@ -5,7 +5,9 @@ from datetime import date
 
 from homeassistant.components.date import DateEntity
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.util import dt as dt_util
 
 from . import RezsiConfigEntry
 from .entity import RezsiEntity
@@ -23,5 +25,7 @@ class PeriodStartDate(RezsiEntity, DateEntity):
         return self.coordinator.store.period_start
 
     async def async_set_value(self, value: date) -> None:
+        if value > dt_util.now().date():
+            raise ServiceValidationError("A kezdőnap nem lehet a jövőben")
         await self.coordinator.store.async_set_start(value)
         await self.coordinator.async_refresh()

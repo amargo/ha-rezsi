@@ -57,7 +57,7 @@ class RezsiConfigFlow(ConfigFlow, domain=DOMAIN):
                 vol.Required(CONF_SZALDO, default=True): BooleanSelector(),
                 vol.Optional(
                     CONF_PERIOD_START,
-                    default=(dt_util.now().date() - timedelta(days=365)).isoformat(),
+                    default=(dt_util.now().date() - timedelta(days=364)).isoformat(),  # 365 days incl. today
                 ): DateSelector(),
             }
         )

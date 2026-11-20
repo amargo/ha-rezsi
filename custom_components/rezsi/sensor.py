@@ -28,14 +28,14 @@ def _diff(c: RezsiCoordinator) -> float:
 
 
 DESCS = (
-    Desc("villany_rezsiaron", "Villany rezsiáron", lambda c: c.data.elec_reg),
-    Desc("villany_piaci_aron", "Villany piaci áron", lambda c: c.data.elec_mkt),
-    Desc("gaz_rezsiaron", "Gáz rezsiáron", lambda c: c.data.gas_reg, gas=True),
-    Desc("gaz_piaci_aron", "Gáz piaci áron", lambda c: c.data.gas_mkt, gas=True),
+    Desc("villany_rezsiaron", "Villany rezsiáron", lambda c: c.data.result.elec_reg),
+    Desc("villany_piaci_aron", "Villany piaci áron", lambda c: c.data.result.elec_mkt),
+    Desc("gaz_rezsiaron", "Gáz rezsiáron", lambda c: c.data.result.gas_reg, gas=True),
+    Desc("gaz_piaci_aron", "Gáz piaci áron", lambda c: c.data.result.gas_mkt, gas=True),
     Desc("osszesen_rezsiaron", "Összesen rezsiáron", lambda c: c.totals()[0]),
     Desc("osszesen_piaci_aron", "Összesen piaci áron", lambda c: c.totals()[1]),
     Desc("kulonbseg", "Különbség", _diff),
-    Desc("eves_becsles_piaci", "Éves becslés piaci", lambda c: c.totals()[1] * 365 / max(c.data.days, 1)),
+    Desc("eves_becsles_piaci", "Éves becslés piaci", lambda c: c.totals()[1] * 365 / max(c.data.result.days, 1)),
 )
 
 
@@ -48,6 +48,7 @@ class RezsiSensor(RezsiEntity, SensorEntity):
     _attr_device_class = SensorDeviceClass.MONETARY
     _attr_native_unit_of_measurement = "Ft"
     _attr_suggested_display_precision = 0
+    _unrecorded_attributes = frozenset({"havi_bontas", "elozo_idoszak"})
 
     def __init__(self, coordinator: RezsiCoordinator, desc: Desc) -> None:
         super().__init__(coordinator, desc.key, desc.name)
