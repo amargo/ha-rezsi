@@ -111,11 +111,9 @@ def load_tariffs(path: Path = TARIFF_FILE) -> list[Tariff]:
 
 
 def tariff_for(tariffs: list[Tariff], day: date) -> Tariff:
-    """Return the last block with valid_from <= day."""
+    """Return the last block with valid_from <= day; days before the first block get the first block."""
     found = [t for t in tariffs if t.valid_from <= day]
-    if not found:
-        raise ValueError(f"no tariff valid on {day.isoformat()}")
-    return found[-1]
+    return found[-1] if found else tariffs[0]
 
 
 def apply_overrides(t: Tariff, overrides: dict[str, Any]) -> Tariff:

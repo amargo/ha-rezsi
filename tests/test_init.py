@@ -1,5 +1,4 @@
-from dataclasses import replace
-from datetime import date, timedelta
+from datetime import timedelta
 from unittest.mock import patch
 
 import pytest
@@ -10,18 +9,8 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 from custom_components.rezsi.const import (
     CONF_GAS, CONF_IMPORT, CONF_OVERRIDES, CONF_PERIOD_START, CONF_SZALDO, DOMAIN,
 )
-from custom_components.rezsi.tariffs import load_tariffs
 
 FETCH = "custom_components.rezsi.coordinator.async_daily_changes"
-
-
-@pytest.fixture(autouse=True)
-def tariffs_cover_past_year():
-    """The bundled first block starts 2026-01-01; let it cover the whole test period."""
-    real = load_tariffs()
-    shifted = [replace(real[0], valid_from=date(2000, 1, 1)), *real[1:]]
-    with patch("custom_components.rezsi.load_tariffs", return_value=shifted):
-        yield
 
 
 def fake(imp_total=3580.0, gas_total=1304.0, with_gas=True):
@@ -35,7 +24,7 @@ def fake(imp_total=3580.0, gas_total=1304.0, with_gas=True):
 
 
 def entry(hass, title="Velencei ház", gas=True):
-    start = (dt_util.now().date() - timedelta(days=364)).isoformat()  # 365 days incl. today
+    start = (dt_util.now().date() - timedelta(days=365)).isoformat()  # config flow default
     data = {CONF_IMPORT: "sensor.imp", CONF_SZALDO: False, CONF_PERIOD_START: start}
     if gas:
         data[CONF_GAS] = "sensor.gas"
@@ -55,7 +44,7 @@ async def test_entities_and_values(recorder_mock, hass):
     await setup(hass, e, fake())
     reg = hass.states.get("sensor.velencei_haz_villany_rezsiaron")
     mkt = hass.states.get("sensor.velencei_haz_villany_piaci_aron")
-    assert float(reg.state) == pytest.approx(165075.08, abs=1)  # gross, no export
+    assert float(reg.state) == pytest.approx(164839.78, abs=1)  # gross, 366 days: band 2523*366/365
     assert float(mkt.state) == pytest.approx(3580 * 130, abs=1)
     assert float(hass.states.get("sensor.velencei_haz_gaz_rezsiaron").state) == pytest.approx(133008, abs=1)
     attrs = mkt.attributes

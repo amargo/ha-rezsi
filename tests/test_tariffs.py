@@ -42,10 +42,10 @@ def test_inheritance_and_lookup(tmp_path):
     assert t27.source == "next"
 
 
-def test_before_first_block(tmp_path):
+def test_before_first_block_uses_first(tmp_path):
     ts = load_tariffs(write(tmp_path, BASE))
-    with pytest.raises(ValueError):
-        tariff_for(ts, date(2025, 12, 31))
+    assert tariff_for(ts, date(2025, 12, 31)) is ts[0]
+    assert tariff_for(ts, date(2000, 1, 1)) is ts[0]
 
 
 def test_incomplete_first_block(tmp_path):

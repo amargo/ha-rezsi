@@ -53,7 +53,7 @@ Repó: `amargo/ha-rezsi`, domain: `rezsi`, MIT licenc, `hacs.json`.
 ```
 
 - Egy blokk csak a változó kulcsokat tartalmazza; a betöltő az előző blokkból örököl.
-- Adott napra a legutolsó `valid_from <= nap` blokk érvényes.
+- Adott napra a legutolsó `valid_from <= nap` blokk érvényes; az első blokk előtti napokra az első blokk.
 - Options flow-ban minden érték felülírható; üres mező = alapérték.
 - Jogszabályváltozás: új blokk + forrás → teszt → release.
 
