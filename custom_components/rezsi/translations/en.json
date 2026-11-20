@@ -1,0 +1,42 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Rezsi kalkulátor",
+        "description": "Add one entry per meter site (flat/house). Two sites = two entries.",
+        "data": {
+          "name": "Site name",
+          "import_entity": "Grid import energy (kWh)",
+          "export_entity": "Grid export energy (kWh, optional)",
+          "gas_entity": "Gas consumption (m³, optional)",
+          "szaldo": "Net metering (szaldó)",
+          "period_start": "Billing period start (default: one year ago)"
+        }
+      }
+    },
+    "abort": { "already_configured": "A site with this name already exists." }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Rezsi kalkulátor options",
+        "description": "Empty price fields use the built-in tariff valid on each day.",
+        "data": {
+          "szaldo": "Net metering (szaldó)",
+          "elec_band_mult": "Electricity band multiplier (2 = double allowance)",
+          "gas_band_mult": "Gas band multiplier (2 = double allowance)",
+          "rhd": "Add 2027 network fee (RHD) increase to market cost",
+          "electricity.reduced": "Electricity reduced price (Ft/kWh)",
+          "electricity.above": "Electricity above-band price (Ft/kWh)",
+          "electricity.band_kwh": "Electricity yearly band (kWh)",
+          "electricity.market": "Electricity market price (Ft/kWh)",
+          "electricity.feed_in": "Feed-in price (Ft/kWh)",
+          "gas.reduced": "Gas reduced price (Ft/m³)",
+          "gas.above": "Gas above-band price (Ft/m³)",
+          "gas.band_m3": "Gas yearly band (m³)",
+          "gas.market": "Gas market price (Ft/m³)"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Rezsi kalkulátor",
+        "description": "Minden mérőhelyhez (lakás, ház) külön példányt adj hozzá. Két lakás = két példány.",
+        "data": {
+          "name": "Mérőhely neve",
+          "import_entity": "Hálózati vételezés (kWh)",
+          "export_entity": "Hálózati betáplálás (kWh, opcionális)",
+          "gas_entity": "Gázfogyasztás (m³, opcionális)",
+          "szaldo": "Szaldó elszámolás",
+          "period_start": "Elszámolási időszak kezdete (alap: egy éve)"
+        }
+      }
+    },
+    "abort": { "already_configured": "Ilyen nevű mérőhely már van." }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Rezsi kalkulátor beállítások",
+        "description": "Az üresen hagyott ármezők a beépített, adott napon érvényes tarifát használják.",
+        "data": {
+          "szaldo": "Szaldó elszámolás",
+          "elec_band_mult": "Villany sávhatár-szorzó (2 = dupla kedvezmény)",
+          "gas_band_mult": "Gáz sávhatár-szorzó (2 = dupla kedvezmény)",
+          "rhd": "2027-es RHD-felár hozzáadása a piaci költséghez",
+          "electricity.reduced": "Villany kedvezményes ár (Ft/kWh)",
+          "electricity.above": "Villany átlag feletti ár (Ft/kWh)",
+          "electricity.band_kwh": "Villany éves sávhatár (kWh)",
+          "electricity.market": "Villany piaci ár (Ft/kWh)",
+          "electricity.feed_in": "Betáplálás átvételi ára (Ft/kWh)",
+          "gas.reduced": "Gáz kedvezményes ár (Ft/m³)",
+          "gas.above": "Gáz átlag feletti ár (Ft/m³)",
+          "gas.band_m3": "Gáz éves sávhatár (m³)",
+          "gas.market": "Gáz piaci ár (Ft/m³)"
+        }
+      }
+    }
+  }
+}
