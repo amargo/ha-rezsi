@@ -19,7 +19,7 @@
     {
       "id": 2,
       "subject": "Task 2: Pure calculation core",
-      "status": "pending",
+      "status": "completed",
       "description": "See plan section 'Task 2: Pure calculation core'.\n\n```json:metadata\n{\"files\": [\"custom_components/rezsi/calc.py\", \"tests/test_calc.py\"], \"verifyCommand\": \".venv/Scripts/python -m pytest tests/test_calc.py -v\", \"acceptanceCriteria\": []}\n```",
       "blockedBy": [
         1
@@ -74,5 +74,5 @@
       ]
     }
   ],
-  "lastUpdated": "2026-11-20T10:28:55"
+  "lastUpdated": "2026-11-20T10:32:42"
 }
