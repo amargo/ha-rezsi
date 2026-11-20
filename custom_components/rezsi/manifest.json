@@ -1,0 +1,13 @@
+{
+  "domain": "rezsi",
+  "name": "Rezsi kalkulátor",
+  "codeowners": ["@amargo"],
+  "config_flow": true,
+  "dependencies": ["recorder"],
+  "documentation": "https://github.com/amargo/ha-rezsi",
+  "integration_type": "service",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/amargo/ha-rezsi/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}
